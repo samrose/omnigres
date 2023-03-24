@@ -14,5 +14,34 @@
       in {
         devShell = pkgs.mkShell { buildInputs = [ pkgs.pkgsStatic.openssl pkgs.pkgconfig cmake pkgs.flex pkgs.readline
                                                   pkgs.zlib clang-tools pkgs.python]; };
-      });
+        packages = rec {
+        omnigres = pkgs.stdenv.mkDerivation  {
+          pname = "omnigres";
+          version = "0.1.0";
+          src = ./. ;
+
+          buildInputs = [ pkgs.pkgsStatic.openssl pkgs.pkgconfig cmake pkgs.flex pkgs.readline
+                                                  pkgs.zlib clang-tools pkgs.python]; 
+
+          # Build and install the package
+          installPhase = ''
+            mkdir -p "$out"
+            mkdir -p build
+            cd build
+            cmake -DCMAKE_BUILD_TYPE="Release" -DPG=15.2 $out/omni
+            make -j all
+            make package
+          '';
+          };
+
+        default = omnigres;
+
+
+        }; 
+        
+        }
+
+
+      );
+    
 }
